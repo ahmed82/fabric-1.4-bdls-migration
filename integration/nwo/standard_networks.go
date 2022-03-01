@@ -185,6 +185,59 @@ func MinimalRaft() *Config {
 	return config
 }
 
+
+/*
+BDLS function config BasicBdls & MultiNodeBdls
+*/
+func BasicBdls() *Config {
+	config := BasicSolo()
+	config.Consensus.Type = "bdls"
+	config.Profiles = []*Profile{{
+		Name:     "SampleDevModeBdls",
+		Orderers: []string{"orderer"},
+	}, {
+		Name:          "TwoOrgsChannel",
+		Consortium:    "SampleConsortium",
+		Organizations: []string{"Org1", "Org2"},
+	}}
+	for _, peer := range config.Peers {
+		peer.BFTDeliveryClient = true
+	}
+	config.SystemChannel.Profile = "SampleDevModeBdls"
+	return config
+}
+
+func MultiNodeBdls() *Config {
+	config := BasicBdls()
+	config.Orderers = []*Orderer{
+		{Name: "orderer1", Organization: "OrdererOrg"},
+		{Name: "orderer2", Organization: "OrdererOrg"},
+		{Name: "orderer3", Organization: "OrdererOrg"},
+		{Name: "orderer4", Organization: "OrdererOrg"},
+	}
+	config.Profiles = []*Profile{{
+		Name:     "SampleDevModeBdls",
+		Orderers: []string{"orderer1", "orderer2", "orderer3", "orderer4"},
+	}, {
+		Name:          "TwoOrgsChannel",
+		Consortium:    "SampleConsortium",
+		Organizations: []string{"Org1", "Org2"},
+	}}
+
+	config.Channels = []*Channel{
+		{Name: "testchannel1", Profile: "TwoOrgsChannel"},
+		{Name: "testchannel2", Profile: "TwoOrgsChannel"}}
+
+	for _, peer := range config.Peers {
+		peer.Channels = []*PeerChannel{
+			{Name: "testchannel1", Anchor: true},
+			{Name: "testchannel2", Anchor: true},
+		}
+	}
+	return config
+}
+/*********************BDLS end*********************/
+
 func BasicSmartBFT() *Config {
 	config := BasicSolo()
 	config.Consensus.Type = "smartbft"
