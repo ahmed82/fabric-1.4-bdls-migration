@@ -822,19 +822,17 @@ func initializeMultichannelRegistrar(
 
 			// the orderer can start without channels at all and have an initialized cluster type consenter
 			switch consenterType {
-			case "etcdraft":
-				consenters["etcdraft"] = etcdraft.New(clusterDialer, conf, srvConf, srv, registrar, nil, metricsProvider, bccsp)
-			case "smartbft":
-				consenters["smartbft"] = smartbft.New(nil, dpmr.Registry(), signer, clusterDialer, conf, srvConf, srv, registrar, metricsProvider, bccsp)
+			//case "etcdraft": consenters["etcdraft"] = etcdraft.New(clusterDialer, conf, srvConf, srv, registrar, nil, metricsProvider, bccsp)
+			//case "smartbft": consenters["smartbft"] = smartbft.New(nil, dpmr.Registry(), signer, clusterDialer, conf, srvConf, srv, registrar, metricsProvider, bccsp)
 			default:
 				logger.Panicf("Unknown cluster type consenter '%s'", consenterType)
 			}
 		}
 	}
 
-	consenters["solo"] = solo.New()
+	//consenters["solo"] = solo.New()
 	var kafkaMetrics *kafka.Metrics
-	consenters["kafka"], kafkaMetrics = kafka.New(conf.Kafka, metricsProvider, healthChecker, icr, registrar.CreateChain)
+	//consenters["kafka"], kafkaMetrics = kafka.New(conf.Kafka, metricsProvider, healthChecker, icr, registrar.CreateChain)
 
 	// Note, we pass a 'nil' channel here, we could pass a channel that
 	// closes if we wished to cleanup this routine on exit.

@@ -14,6 +14,7 @@ import (
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
 	"github.com/hyperledger/fabric-protos-go/orderer"
+	"github.com/hyperledger/fabric-protos-go/orderer/bdls"
 	"github.com/hyperledger/fabric-protos-go/orderer/etcdraft"
 	"github.com/hyperledger/fabric-protos-go/orderer/smartbft"
 )
@@ -83,6 +84,9 @@ func (ct *ConsensusType) VariablyOpaqueFieldProto(name string) (proto.Message, e
 		return &etcdraft.ConfigMetadata{}, nil
 	case "smartbft":
 		return &smartbft.ConfigMetadata{}, nil
+	case "bdls":
+		//TODO: create ConfigMetadata
+		return &bdls.ConfigMetadata{}, nil
 	default:
 		return &empty.Empty{}, nil
 	}

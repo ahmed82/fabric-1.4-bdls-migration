@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/hyperledger/fabric-protos-go/orderer/bdls"
 	"github.com/hyperledger/fabric-protos-go/orderer/smartbft"
 	pb "github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/bccsp"
@@ -286,12 +287,41 @@ func (p *Peer) SmartBFTId2Identities(cid string) map[uint64][]byte {
 	return res
 }
 
+// BdlsId2Identities get identities from last known configuration.
+func (p *Peer) BdlsId2Identities(cid string) map[uint64][]byte {
+	c := p.Channel(cid)
+	if c == nil {
+		return nil
+	}
+
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	oc, ok := c.Resources().OrdererConfig()
+	if !ok {
+		return nil
+	}
+
+	m := &bdls.ConfigMetadata{}
+	proto.Unmarshal(oc.ConsensusMetadata(), m)
+
+	res := make(map[uint64][]byte)
+	for _, consenter := range m.Consenters {
+		res[consenter.ConsenterId] = consenter.Identity
+	}
+
+	return res
+}
+
 type IdentityFethcer struct {
 	Adaptee *Peer
 }
 
 func (i *IdentityFethcer) Id2Identities(cid string) map[uint64][]byte {
 	return i.Adaptee.SmartBFTId2Identities(cid)
+}
+
+func (i *IdentityFethcer) Id2IdentitiesBdls(cid string) map[uint64][]byte {
+	return i.Adaptee.BdlsId2Identities(cid)
 }
 
 // createChannel creates a new channel object and insert it into the channels slice.
