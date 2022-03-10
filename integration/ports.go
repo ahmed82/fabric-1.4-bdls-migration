@@ -39,6 +39,7 @@ const (
 	RaftBasePort
 	SBEBasePort
 	SmartBFTBasePort
+	BdlsBasePort
 )
 
 // On linux, the default ephemeral port range is 32768-60999 and can be

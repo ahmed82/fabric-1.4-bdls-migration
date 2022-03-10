@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/SmartBFT-Go/consensus/pkg/types"
+	"github.com/hyperledger/fabric-protos-go/orderer/bdls"
 	"github.com/hyperledger/fabric-protos-go/orderer/etcdraft"
 	"github.com/hyperledger/fabric-protos-go/orderer/smartbft"
 	"github.com/hyperledger/fabric/common/flogging"
@@ -170,6 +171,7 @@ type Orderer struct {
 	Kafka         Kafka                    `yaml:"Kafka"`
 	EtcdRaft      *etcdraft.ConfigMetadata `yaml:"EtcdRaft"`
 	SmartBFT      *smartbft.ConfigMetadata `yaml:"SmartBFT"`
+	Bdls          *bdls.ConfigMetadata     `yaml:"Bdls"`
 	Organizations []*Organization          `yaml:"Organizations"`
 	MaxChannels   uint64                   `yaml:"MaxChannels"`
 	Capabilities  map[string]bool          `yaml:"Capabilities"`
@@ -211,6 +213,25 @@ var genesisDefaults = TopLevel{
 		},
 		SmartBFT: &smartbft.ConfigMetadata{
 			Options: &smartbft.Options{
+				RequestBatchMaxCount:      uint64(types.DefaultConfig.RequestBatchMaxCount),
+				RequestBatchMaxBytes:      uint64(types.DefaultConfig.RequestBatchMaxBytes),
+				RequestBatchMaxInterval:   types.DefaultConfig.RequestBatchMaxInterval.String(),
+				IncomingMessageBufferSize: uint64(types.DefaultConfig.IncomingMessageBufferSize),
+				RequestPoolSize:           uint64(types.DefaultConfig.RequestPoolSize),
+				RequestForwardTimeout:     types.DefaultConfig.RequestForwardTimeout.String(),
+				RequestComplainTimeout:    types.DefaultConfig.RequestComplainTimeout.String(),
+				RequestAutoRemoveTimeout:  types.DefaultConfig.RequestAutoRemoveTimeout.String(),
+				ViewChangeResendInterval:  types.DefaultConfig.ViewChangeResendInterval.String(),
+				ViewChangeTimeout:         types.DefaultConfig.ViewChangeTimeout.String(),
+				LeaderHeartbeatTimeout:    types.DefaultConfig.LeaderHeartbeatTimeout.String(),
+				LeaderHeartbeatCount:      uint64(types.DefaultConfig.LeaderHeartbeatCount),
+				CollectTimeout:            types.DefaultConfig.CollectTimeout.String(),
+				SyncOnStart:               types.DefaultConfig.SyncOnStart,
+				SpeedUpViewChange:         types.DefaultConfig.SpeedUpViewChange,
+			},
+		},
+		Bdls: &bdls.ConfigMetadata{
+			Options: &bdls.Options{
 				RequestBatchMaxCount:      uint64(types.DefaultConfig.RequestBatchMaxCount),
 				RequestBatchMaxBytes:      uint64(types.DefaultConfig.RequestBatchMaxBytes),
 				RequestBatchMaxInterval:   types.DefaultConfig.RequestBatchMaxInterval.String(),
@@ -438,6 +459,9 @@ loop:
 			cf.TranslatePathInPlace(configDir, &serverCertPath)
 			c.ServerTlsCert = []byte(serverCertPath)
 		}
+		//TODO: add body for the bdls case
+	case "bdls":
+		// Do nothing
 	case SmartBFT:
 		if ord.SmartBFT == nil {
 			logger.Panicf("%s configuration missing", SmartBFT)
