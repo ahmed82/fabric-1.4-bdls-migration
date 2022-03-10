@@ -16,6 +16,7 @@ import (
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
 	protosorderer "github.com/hyperledger/fabric-protos-go/orderer"
+	"github.com/hyperledger/fabric-protos-go/orderer/bdls"
 	"github.com/hyperledger/fabric-protos-go/orderer/smartbft"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/integration/nwo/commands"
@@ -336,6 +337,21 @@ func UpdateOrdererMSP(network *Network, peer *Peer, orderer *Orderer, channel, o
 func UpdateSmartBFTMetadata(network *Network, peer *Peer, orderer *Orderer, channel string, f func(md *smartbft.ConfigMetadata)) {
 	UpdateConsensusMetadata(network, peer, orderer, channel, func(originalMetadata []byte) []byte {
 		metadata := &smartbft.ConfigMetadata{}
+		err := proto.Unmarshal(originalMetadata, metadata)
+		Expect(err).NotTo(HaveOccurred())
+
+		f(metadata)
+
+		newMetadata, err := proto.Marshal(metadata)
+		Expect(err).NotTo(HaveOccurred())
+		return newMetadata
+	})
+}
+
+// UpdateBdlsMetadata executes a config update that updates the bdls metadata according to the given function f
+func UpdateBdlsMetadata(network *Network, peer *Peer, orderer *Orderer, channel string, f func(md *bdls.ConfigMetadata)) {
+	UpdateConsensusMetadata(network, peer, orderer, channel, func(originalMetadata []byte) []byte {
+		metadata := &bdls.ConfigMetadata{}
 		err := proto.Unmarshal(originalMetadata, metadata)
 		Expect(err).NotTo(HaveOccurred())
 
