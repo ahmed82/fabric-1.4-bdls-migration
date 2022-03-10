@@ -43,6 +43,8 @@ const (
 	ConsensusTypeEtcdRaft = "etcdraft"
 	// ConsensusTypeSmartBFT identifies the SmartBFT-based consensus implementation.
 	ConsensusTypeSmartBFT = "smartbft"
+	// ConsensusTypeBdls identifies the BDLS-based consensus implementation.
+	ConsensusTypeBdls = "bdls"
 
 	// BlockValidationPolicyKey TODO
 	BlockValidationPolicyKey = "BlockValidation"
@@ -227,6 +229,11 @@ func NewOrdererGroup(conf *genesisconfig.Orderer) (*cb.ConfigGroup, error) {
 	case ConsensusTypeSmartBFT:
 		if consensusMetadata, err = channelconfig.MarshalSmartBFTMetadata(conf.SmartBFT); err != nil {
 			return nil, errors.Errorf("cannot marshal metadata for orderer type %s: %s", ConsensusTypeSmartBFT, err)
+		}
+	//TODO: replace the MarshalSmartBFTMetadata
+	case ConsensusTypeBdls:
+		if consensusMetadata, err = channelconfig.MarshalSmartBFTMetadata(conf.SmartBFT); err != nil {
+			return nil, errors.Errorf("cannot marshal metadata for orderer type %s: %s", ConsensusTypeBdls, err)
 		}
 	default:
 		return nil, errors.Errorf("unknown orderer type: %s", conf.OrdererType)
