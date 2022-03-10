@@ -61,6 +61,10 @@ const (
 	// the SmartBFT-based ordering service.
 	SampleDevModeSmartBFTProfile = "SampleDevModeSmartBFT"
 
+	// SampleDevModeBdlsProfile references the sample profile used for testing
+	// the Bdls-based ordering service.
+	SampleDevModeBdlsProfile = "SampleDevModeBdls"
+
 	// SampleAppChannelInsecureSoloProfile references the sample profile which
 	// does not include any MSPs and uses solo for ordering.
 	SampleAppChannelInsecureSoloProfile = "SampleAppChannelInsecureSolo"
